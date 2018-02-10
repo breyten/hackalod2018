@@ -13,9 +13,11 @@ sparql.setQuery("""
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
 SELECT ?s, ?o, ?p
 WHERE {
+graph <http://lod.kb.nl/kranten/> {
  ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Article>.
  ?s dc:identifier ?o.
  ?s <http://lod.kb.nl/ontology/ocr> ?p.
+}
 } LIMIT 10
 """)
 sparql.setReturnFormat(JSON)
