@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 from time import sleep
+import shutil
+import hashlib
+import json
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 import requests
@@ -27,8 +30,15 @@ for result in results["results"]["bindings"]:
     }
     record = {}
     for fld in fields.keys():
-      record[fields[fld]] = result[fld]['value']
-    record['text'] = requests.get(record['ocr']).content
+        record[fields[fld]] = result[fld]['value']
+
+    r = requests.get(record['ocr'], stream=True)
+    path = './ocr/%s.xml' % (hashlib.sha224(record['id']).hexdigest(),)
+    record['file'] = path
+    if r.status_code == 200:
+        with open(path, 'wb') as f:
+            r.raw.decode_content = True
+            shutil.copyfileobj(r.raw, f)
     sleep(1)
     records.append(record)
-print(records)
+print json.dumps(records)
