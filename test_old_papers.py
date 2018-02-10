@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+from time import sleep
+
 from SPARQLWrapper import SPARQLWrapper, JSON
+import requests
 
 sparql = SPARQLWrapper("http://lod.kb.nl/sparql")
 sparql.setQuery("""
@@ -25,5 +28,7 @@ for result in results["results"]["bindings"]:
     record = {}
     for fld in fields.keys():
       record[fields[fld]] = result[fld]['value']
+    record['text'] = requests.get(record['ocr']).content
+    sleep(1)
     records.append(record)
 print(records)
